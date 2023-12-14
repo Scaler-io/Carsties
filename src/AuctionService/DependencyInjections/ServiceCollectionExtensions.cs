@@ -11,7 +11,7 @@ namespace AuctionService.DependencyInjections
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, 
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services,
             IConfiguration configuration)
         {
             services.AddControllers()
@@ -32,6 +32,8 @@ namespace AuctionService.DependencyInjections
             services.AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
             services.ConfigureOptions<ConfigureSwaggerOptions>();
             services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearch"));
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddApiVersioning(options =>
             {
