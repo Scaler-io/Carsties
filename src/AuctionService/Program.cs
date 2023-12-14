@@ -1,5 +1,7 @@
 using AuctionService;
+using AuctionService.Data;
 using AuctionService.DependencyInjections;
+using AuctionService.Extensions;
 using AuctionService.Middlewares;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Serilog;
@@ -39,4 +41,17 @@ app.UseMiddleware<RequestLoggerMiddleware>();
 app.UseMiddleware<CorrelationHeaderEnricher>();
 app.UseMiddleware<GLobalExceptionMiddleware>();
 
-app.Run();
+try
+{
+    app.MigrateDb<AuctionDbContext>((context, services) =>
+    {
+        var logger = services.GetRequiredService<ILogger>();
+        var environment = services.GetRequiredService<IWebHostEnvironment>();
+        AuctionDbContextSeed.SeedAsync(context, logger, environment).Wait();
+    });
+    await app.RunAsync();
+}
+finally
+{
+    Log.CloseAndFlush();
+}

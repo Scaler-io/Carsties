@@ -44,4 +44,10 @@
     </Using>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="App_Data\SeedData\AuctionSample.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
