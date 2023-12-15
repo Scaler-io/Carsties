@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuctionService", "src\Aucti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carsties.Shared", "src\Carsties.Shared\Carsties.Shared.csproj", "{A5129036-BBF9-43FA-9BAB-0727C90AEC47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchService", "src\SearchService\SearchService.csproj", "{0E897C87-EB6F-4780-9F26-B34EBB5F9513}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{A5129036-BBF9-43FA-9BAB-0727C90AEC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5129036-BBF9-43FA-9BAB-0727C90AEC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5129036-BBF9-43FA-9BAB-0727C90AEC47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E897C87-EB6F-4780-9F26-B34EBB5F9513}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E897C87-EB6F-4780-9F26-B34EBB5F9513}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E897C87-EB6F-4780-9F26-B34EBB5F9513}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E897C87-EB6F-4780-9F26-B34EBB5F9513}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{35C7C87A-EC58-479E-93C8-0D6821A9D87E} = {17EA5AD2-B5BE-45A7-A1A0-1168ACF92F0F}
 		{A5129036-BBF9-43FA-9BAB-0727C90AEC47} = {17EA5AD2-B5BE-45A7-A1A0-1168ACF92F0F}
+		{0E897C87-EB6F-4780-9F26-B34EBB5F9513} = {17EA5AD2-B5BE-45A7-A1A0-1168ACF92F0F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA288932-7D0E-4D35-8790-DD7BB07FCFF9}
