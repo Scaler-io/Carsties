@@ -2,12 +2,11 @@
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace AuctionService.Controllers
 {
-    [Route("api/v{version:apiVersion}/auction")]
+    [Route("api/v{version:apiVersion}/auctions")]
     [ApiController]
     public class BaseApiController : ControllerBase
     {

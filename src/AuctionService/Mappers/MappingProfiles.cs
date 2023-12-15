@@ -9,10 +9,11 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         CreateMap<Auction, AuctionDto>()
+        .ForMember(d => d.AuctionEnd, o => o.MapFrom(s => s.AuctionEnd.ToString("dd/MM/yyyy hh:mm:ss tt")))
         .ForMember(d => d.MetaData, o => o.MapFrom(s => new MetaDataDto
         {
-            CreatedAt = s.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss tt"),
-            UpdatedAt = s.UpdatedAt.ToString("dd/MM/yyyy HH:mm:ss tt")
+            CreatedAt = s.CreatedAt.ToString("dd/MM/yyyy hh:mm:ss tt"),
+            UpdatedAt = s.UpdatedAt.ToString("dd/MM/yyyy hh:mm:ss tt")
         }));
 
         CreateMap<Item, ItemDto>();

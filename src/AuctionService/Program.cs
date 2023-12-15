@@ -10,7 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 var configurations = builder.Configuration;
 
 builder.Services.AddApplicationServices(configurations)
-                .AddDatabaseServices(configurations);
+                .AddDatabaseServices(configurations)
+                .AddBusinessLogicServices(configurations);
 
 var logger = Logging.GetLogger(configurations, builder.Environment);
 var host = builder.Host.UseSerilog(logger);
