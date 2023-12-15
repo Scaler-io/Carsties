@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres
+    container_name: AuctionDb
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=AuctionDb
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: AuctionDbViewer
+    depends_on:
+      - postgres
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@carsties.com
+      - PGADMIN_DEFAULT_PASSWORD=admin1234
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/root/.pgadmin
+
+volumes:
+  postgres_data:    
+  pgadmin_data:    

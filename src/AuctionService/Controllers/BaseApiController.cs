@@ -2,12 +2,11 @@
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace AuctionService.Controllers
 {
-    [Route("api/v{version:apiVersion}/auction")]
+    [Route("api/v{version:apiVersion}/auctions")]
     [ApiController]
     public class BaseApiController : ControllerBase
     {
@@ -38,6 +37,17 @@ namespace AuctionService.Controllers
                 ErrorCodes.OperationFailed => BadRequest(new ApiResponse(ErrorCodes.OperationFailed, result.ErrorMessage)),
                 _ => BadRequest(new ApiResponse(ErrorCodes.BadRequest, result.ErrorMessage))
             };
+        }
+
+        public IActionResult CreatedResult<T>(Result<T> result, string routeName, object param)
+        {
+            if (result.IsSuccess && result.Value != null) return CreatedAtRoute(
+                    routeName,
+                    param,
+                    result.Value
+                );
+
+            return OkOrFailure(result);
         }
 
         //protected IActionResult Failure(ValidationResult validationResult)
