@@ -14,13 +14,13 @@ public class MappingProfiles : Profile
         {
             CreatedAt = s.CreatedAt.ToString("dd/MM/yyyy hh:mm:ss tt"),
             UpdatedAt = s.UpdatedAt.ToString("dd/MM/yyyy hh:mm:ss tt")
-        }));
+        })).ReverseMap();
 
-        CreateMap<Item, ItemDto>();
+        CreateMap<Item, ItemDto>().ReverseMap();
 
         CreateMap<CreateAuctionDto, Auction>()
-        .ForMember(d => d.Item, o => o.MapFrom(s => s));
-        CreateMap<CreateAuctionDto, Item>();
+        .ForMember(d => d.Item, o => o.MapFrom(s => s)).ReverseMap();
+        CreateMap<CreateAuctionDto, Item>().ReverseMap();
 
     }
 }

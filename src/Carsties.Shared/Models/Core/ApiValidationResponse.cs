@@ -2,14 +2,19 @@
 
 namespace Carsties.Shared.Models.Core
 {
-    public class ApiValidationResponse : ApiResponse
+    public sealed class ApiValidationResponse : ApiResponse
     {
         public ApiValidationResponse(string errorMessages = "")
             : base(ErrorCodes.BadRequest)
         {
-            ErrorMessage = errorMessages;
+            ErrorMessage = !string.IsNullOrEmpty(errorMessages) ? errorMessages : GetDefaultMessage(Code);
         }
 
         public List<FieldLevelError> Errors { get; set; }
+
+        protected override string GetDefaultMessage(ErrorCodes code)
+        {
+            return "Invalid data provided.";
+        }
     }
 }

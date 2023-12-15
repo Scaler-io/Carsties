@@ -1,4 +1,5 @@
 ﻿using AuctionService.Controllers;
+using AuctionService.Models.DTOs;
 using AuctionService.Services;
 using AuctionService.Swagger;
 using Carsties.Shared.Extensions.Logger;
@@ -28,7 +29,7 @@ public class AuctionController : BaseApiController
         return OkOrFailure(result);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetAuction")]
     [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
     [SwaggerOperation(OperationId = "GetAuction", Description = "Fetches auction by id")]
     public async Task<IActionResult> GetAuction([FromRoute] string id)
@@ -37,5 +38,16 @@ public class AuctionController : BaseApiController
         var result = await _auctionService.GetAuction(id, RequestInformation.CorrelationId);
         Logger.Here().MethodExited();
         return OkOrFailure(result);
+    }
+
+    [HttpPost]
+    [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+    [SwaggerOperation(OperationId = "CreateAuction", Description = "Creates new auction")]
+    public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionDto createAuction)
+    {
+        Logger.Here().MethodEnterd();
+        var result = await _auctionService.CreateAuction(createAuction, RequestInformation.CorrelationId);
+        Logger.Here().MethodExited();
+        return CreatedResult(result, nameof(GetAuction), new { id = result.Value.Id.ToString() });
     }
 }

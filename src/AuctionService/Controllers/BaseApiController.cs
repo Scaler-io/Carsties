@@ -39,6 +39,17 @@ namespace AuctionService.Controllers
             };
         }
 
+        public IActionResult CreatedResult<T>(Result<T> result, string routeName, object param)
+        {
+            if (result.IsSuccess && result.Value != null) return CreatedAtRoute(
+                    routeName,
+                    param,
+                    result.Value
+                );
+
+            return OkOrFailure(result);
+        }
+
         //protected IActionResult Failure(ValidationResult validationResult)
         //{
         //    var errors = validationResult;

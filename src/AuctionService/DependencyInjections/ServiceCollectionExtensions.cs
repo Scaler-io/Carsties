@@ -79,7 +79,7 @@ namespace AuctionService.DependencyInjections
 
                     validationError.Errors.Add(fieldLevelError);
                 }
-                return new UnprocessableEntityObjectResult(validationError);
+                return new BadRequestObjectResult(validationError);
             };
         }
     }

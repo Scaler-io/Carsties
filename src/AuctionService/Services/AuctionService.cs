@@ -1,4 +1,5 @@
 using AuctionService.Data;
+using AuctionService.Entities;
 using AuctionService.Models.DTOs;
 using AutoMapper;
 using Carsties.Shared.Extensions.Logger;
@@ -68,5 +69,29 @@ public class AuctionService : IAuctionService
             .Information("Actions found {@auction}", result);
         _logger.Here().MethodExited();
         return Result<AuctionDto>.Success(result);
+    }
+
+    public async Task<Result<AuctionDto>> CreateAuction(CreateAuctionDto createAuction, string correlationId)
+    {
+        _logger.Here().MethodEnterd();
+        _logger.Here()
+            .WithCorrelationId(correlationId)
+            .Information("Request -  create new auction {@auction}", createAuction);
+
+        var auctionEntity = _mapper.Map<Auction>(createAuction);
+        auctionEntity.Seller = "test";
+
+        _context.Add(auctionEntity);
+        var createResult = await _context.SaveChangesAsync() > 0;
+
+        if (!createResult)
+        {
+            _logger.Here().WithCorrelationId(correlationId).Error("{category} - Could not save changes to the db", ErrorCodes.OperationFailed);
+            return Result<AuctionDto>.Failure(ErrorCodes.OperationFailed);
+        }
+
+        _logger.Here().WithCorrelationId(correlationId).Information("New auction created successfully with id {id}", auctionEntity.Id);
+        _logger.Here().MethodExited();
+        return Result<AuctionDto>.Success(_mapper.Map<AuctionDto>(auctionEntity));
     }
 }
