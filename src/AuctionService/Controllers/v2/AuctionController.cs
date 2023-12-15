@@ -50,4 +50,15 @@ public class AuctionController : BaseApiController
         Logger.Here().MethodExited();
         return CreatedResult(result, nameof(GetAuction), new { id = result.Value.Id.ToString() });
     }
+
+    [HttpPut("{id}")]
+    [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+    [SwaggerOperation(OperationId = "UpdateAuction", Description = "Updates new auction")]
+    public async Task<IActionResult> UpdateAuction([FromRoute] string id, [FromBody] UpdateAuctionDto updateAuction)
+    {
+        Logger.Here().MethodEnterd();
+        var result = await _auctionService.UpdateAuction(id, updateAuction, RequestInformation.CorrelationId);
+        Logger.Here().MethodExited();
+        return OkOrFailure(result);
+    }
 }

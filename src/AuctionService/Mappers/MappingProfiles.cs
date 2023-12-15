@@ -22,5 +22,8 @@ public class MappingProfiles : Profile
         .ForMember(d => d.Item, o => o.MapFrom(s => s)).ReverseMap();
         CreateMap<CreateAuctionDto, Item>().ReverseMap();
 
+        CreateMap<UpdateAuctionDto, Auction>()
+            .ForMember(d => d.Item, o => o.MapFrom(s => s)).ReverseMap();
+        CreateMap<UpdateAuctionDto, Item>().ReverseMap();
     }
 }
