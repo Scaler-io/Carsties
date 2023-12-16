@@ -1,5 +1,7 @@
+using Carsties.Shared.Extensions.Logger;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using SearchService;
+using SearchService.Data;
 using SearchService.DependencyInjections;
 using Serilog;
 
@@ -35,4 +37,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    await MongoDb.InitConnection(logger, configurations, app.Environment);
+    await app.RunAsync();
+}
+finally
+{
+    Log.CloseAndFlush();
+}
