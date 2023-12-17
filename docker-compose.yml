@@ -23,7 +23,19 @@ services:
       - "5050:80"
     volumes:
       - pgadmin_data:/root/.pgadmin
+  
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=Passw0rd
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/var/lib/mongodb/data
 
 volumes:
   postgres_data:    
   pgadmin_data:    
+  mongodata:

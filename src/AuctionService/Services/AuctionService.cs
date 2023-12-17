@@ -2,6 +2,7 @@ using AuctionService.Data;
 using AuctionService.Entities;
 using AuctionService.Models.DTOs;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Carsties.Shared.Extensions.Logger;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
@@ -22,15 +23,19 @@ public class AuctionService : IAuctionService
         _context = context;
     }
 
-    public async Task<Result<IReadOnlyList<AuctionDto>>> GetAllAuctions(string correlationId)
+    public async Task<Result<IReadOnlyList<AuctionDto>>> GetAllAuctions(string date, string correlationId)
     {
         _logger.Here().MethodEnterd();
         _logger.Here().WithCorrelationId(correlationId)
             .Information("Request - get all auctions");
 
-        var auctions = await _context.Auctions
-            .Include(x => x.Item)
-            .OrderBy(x => x.Item.Make)
+        var query = _context.Auctions.OrderBy(x => x.Item.Make).AsQueryable();
+        if (!string.IsNullOrEmpty(date))
+        {
+            query = query.Where(x => x.UpdatedAt.CompareTo(DateTime.Parse(date).ToUniversalTime()) > 0);
+        }
+
+        var auctions = (IReadOnlyList<AuctionDto>)await query.ProjectTo<AuctionDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
 
         if (!auctions.Any())
@@ -39,11 +44,11 @@ public class AuctionService : IAuctionService
             return Result<IReadOnlyList<AuctionDto>>.Failure(ErrorCodes.NotFound);
         }
 
-        var result = _mapper.Map<IReadOnlyList<AuctionDto>>(auctions);
+        // var result = _mapper.Map<IReadOnlyList<AuctionDto>>(auctions);
 
         _logger.Here().Information("Total {@count} auctions found", auctions.Count);
         _logger.Here().MethodExited();
-        return Result<IReadOnlyList<AuctionDto>>.Success(result);
+        return Result<IReadOnlyList<AuctionDto>>.Success(auctions);
     }
 
     public async Task<Result<AuctionDto>> GetAuction(string id, string correlationId)
