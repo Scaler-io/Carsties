@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using SearchService;
 using SearchService.Data;
 using SearchService.DependencyInjections;
+using SearchService.Middlewares;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configurations = builder.Configuration;
 
-builder.Services.AddApplicationServices(configurations);
+builder.Services
+    .AddApplicationServices(configurations)
+    .AddBusinessLogicServices();
 
 var logger = Logging.GetLogger(configurations, builder.Environment);
 var host = builder.Host.UseSerilog(logger);
@@ -36,6 +39,10 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<RequestLoggerMiddleware>();
+app.UseMiddleware<CorrelationHeaderEnricher>();
+app.UseMiddleware<GLobalExceptionMiddleware>();
 
 try
 {
