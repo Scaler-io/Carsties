@@ -92,17 +92,19 @@ public class AuctionService : IAuctionService
         auctionEntity.Seller = "test";
 
         _context.Add(auctionEntity);
+        var newAuctionDto = _mapper.Map<AuctionDto>(auctionEntity);
+
+        // public auction create event
+        await PublishMessage(newAuctionDto, correlationId);
+        
         var createResult = await _context.SaveChangesAsync() > 0;
+
         if (!createResult)
         {
             _logger.Here().WithCorrelationId(correlationId).Error("{category} - Could not save changes to the db", ErrorCodes.OperationFailed);
             return Result<AuctionDto>.Failure(ErrorCodes.OperationFailed);
         }
 
-        var newAuctionDto = _mapper.Map<AuctionDto>(auctionEntity);
-        await PublishMessage(newAuctionDto, correlationId);
-
-        // public auction create event
         _logger.Here().WithCorrelationId(correlationId).Information("New auction created successfully with id {id}", auctionEntity.Id);
         _logger.Here().MethodExited();
         return Result<AuctionDto>.Success(_mapper.Map<AuctionDto>(auctionEntity));
