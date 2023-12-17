@@ -1,6 +1,7 @@
 using System.Reflection;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using SearchService.ConfigurationOptions.ElasticSearch;
@@ -33,6 +34,13 @@ public static class ServiceCollectionExtensions
         services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearch"));
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddMassTransit(config =>
+        {
+            config.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         services.AddApiVersioning(options =>
             {
