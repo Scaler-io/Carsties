@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using SearchService.ConfigurationOptions.ElasticSearch;
+using SearchService.Consumers;
 using SearchService.Swagger;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -36,6 +37,8 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddMassTransit(config =>
         {
+            config.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
+            config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
             config.UsingRabbitMq((context, cfg) =>
             {
                 cfg.ConfigureEndpoints(context);
