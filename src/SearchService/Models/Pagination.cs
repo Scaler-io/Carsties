@@ -2,6 +2,10 @@ namespace SearchService.Models;
 
 public class Pagination<T> where T : class
 {
+    public Pagination()
+    {
+
+    }
     public Pagination(int pageSize, int pageNumber, int pageCount, long total, IReadOnlyList<T> data)
     {
         PageSize = pageSize;
@@ -15,7 +19,7 @@ public class Pagination<T> where T : class
     public int PageNumber { get; set; }
     public int PageCount { get; set; }
     public long Total { get; set; }
-    public IReadOnlyList<T> Data { get; set; }
+    public IReadOnlyList<T> Data { get; set; } = new List<T>();
 
 
 }
