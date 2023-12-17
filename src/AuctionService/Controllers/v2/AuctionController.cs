@@ -21,10 +21,10 @@ public class AuctionController : BaseApiController
     [HttpGet]
     [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
     [SwaggerOperation(OperationId = "GetAllAuctions", Description = "Fetches all auctions")]
-    public async Task<IActionResult> GetAllAuctions()
+    public async Task<IActionResult> GetAllAuctions([FromQuery] string date)
     {
         Logger.Here().MethodEnterd();
-        var result = await _auctionService.GetAllAuctions(RequestInformation.CorrelationId);
+        var result = await _auctionService.GetAllAuctions(date, RequestInformation.CorrelationId);
         Logger.Here().MethodExited();
         return OkOrFailure(result);
     }
