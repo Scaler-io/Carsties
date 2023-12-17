@@ -108,24 +108,6 @@
     "updatedAt": "2021-12-15T05:09:51Z"
   },
   {
-    "id": "9410a941-3759-4340-9e5b-c53861c148b1",
-    "reservePrice": 100,
-    "seller": "test",
-    "winner": null,
-    "soldAmount": 0,
-    "currentHighBid": 0,
-    "status": "Live",
-    "auctionEnd": "2023-12-29T16:02:41Z",
-    "make": "Ford",
-    "model": "Escort",
-    "year": 2021,
-    "color": "White",
-    "mileage": 10000,
-    "imageUrl": "https://cdn.pixabay.com/photo/2018/02/04/15/45/car-3130111_960_720.jpg",
-    "createdAt": "2021-12-15T16:02:41Z",
-    "updatedAt": "2021-12-15T16:02:41Z"
-  },
-  {
     "id": "3659ac24-29dd-407a-81f5-ecfe6f924b9b",
     "reservePrice": 20000,
     "seller": "bob",
