@@ -3,6 +3,7 @@ using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
 using MongoDB.Entities;
 using SearchService.Entities;
+using SearchService.Models;
 
 namespace SearchService.Services;
 
@@ -15,26 +16,39 @@ public class SearchService : ISearchService
         _logger = logger;
     }
 
-    public async Task<Result<IReadOnlyList<Item>>> SearchAsync(string searchTerm, string correlationId)
+    public async Task<Result<Pagination<Item>>> SearchAsync(RequestQuery queryParam, string correlationId)
     {
         _logger.Here().MethodEnterd();
         _logger.Here()
             .WithCorrelationId(correlationId)
-            .Information("Request - search items with {searchTerms}", searchTerm);
+            .Information("Request - search items with {searchTerms}", queryParam.SearchTerm);
 
-        var query = DB.Find<Item>();
+        var query = DB.PagedSearch<Item>();
         query.Sort(x => x.Ascending(a => a.Make));
 
-        var result = await query.ExecuteAsync();
-
-        if (!result.Any())
+        if (!string.IsNullOrEmpty(queryParam.SearchTerm))
         {
-            _logger.Here().WithCorrelationId(correlationId).Warning("No item were found");
-            return Result<IReadOnlyList<Item>>.Failure(ErrorCodes.NotFound);
+            query.Match(Search.Full, queryParam.SearchTerm).SortByTextScore();
         }
 
-        _logger.Here().WithCorrelationId(correlationId).Information("Total {count} matches found.", result.Count);
+        query.PageNumber(queryParam.PageNumber);
+        query.PageSize(queryParam.PageSize);
+
+        var paginatedResult = await query.ExecuteAsync();
+
+        if (!paginatedResult.Results.Any())
+        {
+            _logger.Here().WithCorrelationId(correlationId).Warning("No item were found");
+            return Result<Pagination<Item>>.Failure(ErrorCodes.NotFound);
+        }
+
+        _logger.Here().WithCorrelationId(correlationId).Information("Total {count} matches found.", paginatedResult.Results.Count);
         _logger.Here().MethodExited();
-        return Result<IReadOnlyList<Item>>.Success(result);
+        return Result<Pagination<Item>>.Success(new Pagination<Item>(queryParam.PageSize, 
+            queryParam.PageNumber, 
+            paginatedResult.PageCount, 
+            paginatedResult.TotalCount,
+            paginatedResult.Results
+        ));
     }
 }

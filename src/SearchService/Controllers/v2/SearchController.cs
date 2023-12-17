@@ -1,6 +1,7 @@
 
 using Carsties.Shared.Extensions.Logger;
 using Microsoft.AspNetCore.Mvc;
+using SearchService.Models;
 using SearchService.Services;
 using SearchService.Swagger;
 using Swashbuckle.AspNetCore.Annotations;
@@ -20,10 +21,10 @@ public class SearchController : BaseApiController
     [HttpGet]
     [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
     [SwaggerOperation(OperationId = "SearchItems", Description = "Searches items base on search term")]
-    public async Task<IActionResult> SearchItems([FromQuery] string searchTerm)
+    public async Task<IActionResult> SearchItems([FromQuery] RequestQuery query)
     {
         Logger.Here().MethodEnterd();
-        var result = await _searchService.SearchAsync(searchTerm, RequestInformation.CorrelationId);
+        var result = await _searchService.SearchAsync(query, RequestInformation.CorrelationId);
         Logger.Here().MethodExited();
         return OkOrFailure(result);
     }
