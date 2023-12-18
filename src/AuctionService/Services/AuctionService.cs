@@ -95,8 +95,8 @@ public class AuctionService : IAuctionService
         var newAuctionDto = _mapper.Map<AuctionDto>(auctionEntity);
 
         // public auction create event
-        await PublishMessage(newAuctionDto, correlationId);
-        
+        await PublishMessage<AuctionDto, AuctionCreated>(newAuctionDto, correlationId);
+
         var createResult = await _context.SaveChangesAsync() > 0;
 
         if (!createResult)
@@ -128,8 +128,9 @@ public class AuctionService : IAuctionService
         }
 
         _mapper.Map(updateAuction, auctionEntity, typeof(UpdateAuctionDto), typeof(Auction));
-
         _context.Entry(auctionEntity).State = EntityState.Modified;
+
+        await PublishMessage<Auction, AuctionUpdated>(auctionEntity, correlationId);
         var updateResult = await _context.SaveChangesAsync() > 0;
 
         if (!updateResult)
@@ -143,12 +144,12 @@ public class AuctionService : IAuctionService
         return Result<bool>.Success(true);
     }
 
-    private async Task PublishMessage(AuctionDto newAuction, string correlationId)
+    private async Task PublishMessage<T, TEvent>(T newAuction, string correlationId)
     {
-        var auctionCreated = _mapper.Map<AuctionCreated>(newAuction);
-        await _publishEndpoint.Publish(auctionCreated);
+        var newEvent = _mapper.Map<TEvent>(newAuction);
+        await _publishEndpoint.Publish(newEvent);
         _logger.Here()
             .WithCorrelationId(correlationId)
-            .Information("Successfully publihed auction created message");
+            .Information("Successfully publihed auction event message");
     }
 }

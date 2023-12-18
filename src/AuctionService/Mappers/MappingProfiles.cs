@@ -38,5 +38,8 @@ public class MappingProfiles : Profile
         .ForMember(d => d.AuctionEnd, o => o.MapFrom(s => DateTime.Parse(s.AuctionEnd).ToUniversalTime()))
         .ForMember(d => d.CreatedAt, o => o.MapFrom(s => DateTime.Parse(s.MetaData.CreatedAt).ToUniversalTime()))
         .ForMember(d => d.UpdatedAt, o => o.MapFrom(s => DateTime.Parse(s.MetaData.UpdatedAt).ToUniversalTime()));
+
+        CreateMap<Auction, AuctionUpdated>().IncludeMembers(a => a.Item);
+        CreateMap<Item, AuctionUpdated>();
     }
 }
