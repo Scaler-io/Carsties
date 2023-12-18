@@ -30,4 +30,8 @@
 	    <Alias>ILogger</Alias>
 	  </Using>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Carsties.Shared\Carsties.Shared.csproj" />
+	</ItemGroup>
 </Project>

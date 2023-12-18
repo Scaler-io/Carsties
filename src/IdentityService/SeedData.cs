@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Carsties.Shared.Extensions.Logger;
 using IdentityModel;
 using IdentityService.Data;
 using IdentityService.Models;
@@ -17,6 +18,9 @@ public class SeedData
         context.Database.Migrate();
 
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        if (userMgr.Users.Any()) return;
+
         var alice = userMgr.FindByNameAsync("alice").Result;
         if (alice == null)
         {
@@ -33,20 +37,17 @@ public class SeedData
             }
 
             result = userMgr.AddClaimsAsync(alice, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Alice Smith"),
-                            new Claim(JwtClaimTypes.GivenName, "Alice"),
-                            new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                            new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
+                            new Claim(JwtClaimTypes.Name, "Alice Smith")
                         }).Result;
             if (!result.Succeeded)
             {
                 throw new Exception(result.Errors.First().Description);
             }
-            logger.Debug("alice created");
+            logger.Here().Debug("alice created");
         }
         else
         {
-            logger.Debug("alice already exists");
+            logger.Here().Debug("alice already exists");
         }
 
         var bob = userMgr.FindByNameAsync("bob").Result;
@@ -65,21 +66,17 @@ public class SeedData
             }
 
             result = userMgr.AddClaimsAsync(bob, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Bob Smith"),
-                            new Claim(JwtClaimTypes.GivenName, "Bob"),
-                            new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                            new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
-                            new Claim("location", "somewhere")
+                            new Claim(JwtClaimTypes.Name, "Bob Smith")
                         }).Result;
             if (!result.Succeeded)
             {
                 throw new Exception(result.Errors.First().Description);
             }
-            logger.Debug("bob created");
+            logger.Here().Debug("bob created");
         }
         else
         {
-            logger.Debug("bob already exists");
+            logger.Here().Debug("bob already exists");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using IdentityService;
+﻿using Carsties.Shared.Extensions.Logger;
+using IdentityService;
 using Serilog;
 
 
@@ -18,13 +19,7 @@ try
 
     // this seeding is only for the template to bootstrap the DB and users.
     // in production you will likely want a different approach.
-    if (args.Contains("/seed"))
-    {
-        logger.Information("Seeding database...");
-        SeedData.EnsureSeedData(app);
-        logger.Information("Done seeding database. Exiting.");
-        return;
-    }
+    SeedData.EnsureSeedData(app);
 
     app.Run();
 }
@@ -36,10 +31,10 @@ catch (Exception ex) when (
                 && ex.GetType().Name is not "HostAbortedException"
                         )
 {
-    logger.Fatal(ex, "Unhandled exception");
+    logger.Here().Fatal(ex, "Unhandled exception");
 }
 finally
 {
-    logger.Information("Shut down complete");
+    logger.Here().Information("Shut down complete");
     Log.CloseAndFlush();
 }
