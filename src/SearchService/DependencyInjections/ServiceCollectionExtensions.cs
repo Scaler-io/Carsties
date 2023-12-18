@@ -1,9 +1,11 @@
 using System.Reflection;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using SearchService.ConfigurationOptions.ElasticSearch;
+using SearchService.Consumers;
 using SearchService.Swagger;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -33,6 +35,20 @@ public static class ServiceCollectionExtensions
         services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearch"));
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddMassTransit(config =>
+        {
+            config.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
+            config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
+            config.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.ReceiveEndpoint("search-auction-created", e =>
+                {
+                    e.UseMessageRetry(r => r.Interval(5, 5));
+                    e.ConfigureConsumer<AuctionCreatedConsumer>(context);
+                });
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         services.AddApiVersioning(options =>
             {

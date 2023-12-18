@@ -34,8 +34,25 @@ services:
       - 27017:27017
     volumes:
       - mongodata:/var/lib/mongodb/data
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce
+    ports:
+      - 7000:8000
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
 
 volumes:
   postgres_data:    
   pgadmin_data:    
   mongodata:
+  portainer_data:

@@ -1,7 +1,9 @@
 ﻿using AuctionService.ConfigurationOptions.ElasticSearch;
+using AuctionService.Data;
 using AuctionService.Swagger;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.Filters;
@@ -34,6 +36,19 @@ namespace AuctionService.DependencyInjections
             services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearch"));
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddMassTransit(config =>
+            {
+                config.AddEntityFrameworkOutbox<AuctionDbContext>(o =>
+                {
+                    o.QueryDelay = TimeSpan.FromSeconds(10);
+                    o.UsePostgres();
+                    o.UseBusOutbox();
+                });
+                config.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             services.AddApiVersioning(options =>
             {

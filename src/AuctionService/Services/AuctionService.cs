@@ -3,9 +3,11 @@ using AuctionService.Entities;
 using AuctionService.Models.DTOs;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Carsties.Shared.Contracts;
 using Carsties.Shared.Extensions.Logger;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuctionService.Services;
@@ -15,12 +17,17 @@ public class AuctionService : IAuctionService
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly AuctionDbContext _context;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public AuctionService(ILogger logger, IMapper mapper, AuctionDbContext context)
+    public AuctionService(ILogger logger,
+        IMapper mapper,
+        AuctionDbContext context,
+        IPublishEndpoint publishEndpoint)
     {
         _logger = logger;
         _mapper = mapper;
         _context = context;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Result<IReadOnlyList<AuctionDto>>> GetAllAuctions(string date, string correlationId)
@@ -43,8 +50,6 @@ public class AuctionService : IAuctionService
             _logger.Here().Warning("No auctions found in database");
             return Result<IReadOnlyList<AuctionDto>>.Failure(ErrorCodes.NotFound);
         }
-
-        // var result = _mapper.Map<IReadOnlyList<AuctionDto>>(auctions);
 
         _logger.Here().Information("Total {@count} auctions found", auctions.Count);
         _logger.Here().MethodExited();
@@ -87,6 +92,11 @@ public class AuctionService : IAuctionService
         auctionEntity.Seller = "test";
 
         _context.Add(auctionEntity);
+        var newAuctionDto = _mapper.Map<AuctionDto>(auctionEntity);
+
+        // public auction create event
+        await PublishMessage<AuctionDto, AuctionCreated>(newAuctionDto, correlationId);
+
         var createResult = await _context.SaveChangesAsync() > 0;
 
         if (!createResult)
@@ -118,8 +128,9 @@ public class AuctionService : IAuctionService
         }
 
         _mapper.Map(updateAuction, auctionEntity, typeof(UpdateAuctionDto), typeof(Auction));
-
         _context.Entry(auctionEntity).State = EntityState.Modified;
+
+        await PublishMessage<Auction, AuctionUpdated>(auctionEntity, correlationId);
         var updateResult = await _context.SaveChangesAsync() > 0;
 
         if (!updateResult)
@@ -131,5 +142,14 @@ public class AuctionService : IAuctionService
         _logger.Here().WithCorrelationId(correlationId).Information("Auction updated successfully");
         _logger.Here().MethodExited();
         return Result<bool>.Success(true);
+    }
+
+    private async Task PublishMessage<T, TEvent>(T newAuction, string correlationId)
+    {
+        var newEvent = _mapper.Map<TEvent>(newAuction);
+        await _publishEndpoint.Publish(newEvent);
+        _logger.Here()
+            .WithCorrelationId(correlationId)
+            .Information("Successfully publihed auction event message");
     }
 }
