@@ -3,6 +3,7 @@ using AuctionService.Models.DTOs;
 using AuctionService.Services;
 using AuctionService.Swagger;
 using Carsties.Shared.Extensions.Logger;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -40,24 +41,26 @@ public class AuctionController : BaseApiController
         return OkOrFailure(result);
     }
 
+    [Authorize]
     [HttpPost]
     [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
     [SwaggerOperation(OperationId = "CreateAuction", Description = "Creates new auction")]
     public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionDto createAuction)
     {
         Logger.Here().MethodEnterd();
-        var result = await _auctionService.CreateAuction(createAuction, RequestInformation.CorrelationId);
+        var result = await _auctionService.CreateAuction(createAuction, RequestInformation);
         Logger.Here().MethodExited();
         return CreatedResult(result, nameof(GetAuction), new { id = result.Value.Id.ToString() });
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
     [SwaggerOperation(OperationId = "UpdateAuction", Description = "Updates new auction")]
     public async Task<IActionResult> UpdateAuction([FromRoute] string id, [FromBody] UpdateAuctionDto updateAuction)
     {
         Logger.Here().MethodEnterd();
-        var result = await _auctionService.UpdateAuction(id, updateAuction, RequestInformation.CorrelationId);
+        var result = await _auctionService.UpdateAuction(id, updateAuction, RequestInformation);
         Logger.Here().MethodExited();
         return OkOrFailure(result);
     }

@@ -1,10 +1,13 @@
 ﻿using AuctionService.ConfigurationOptions.ElasticSearch;
+using AuctionService.ConfigurationOptions.Identity;
 using AuctionService.Data;
 using AuctionService.Swagger;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
@@ -66,6 +69,25 @@ namespace AuctionService.DependencyInjections
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = HandleFrameworkValidationFailure();
+            });
+
+            var identityGroupAccess = configuration
+                .GetSection("IdentityGroupAccess")
+                .Get<IdentityGroupAccessOptions>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = identityGroupAccess.Authority;
+                options.Audience = identityGroupAccess.Audience;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ClockSkew = TimeSpan.Zero,
+                    NameClaimType = "username"
+                };
             });
 
             return services;

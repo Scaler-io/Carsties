@@ -3,6 +3,7 @@ using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace AuctionService.Controllers
 {
@@ -17,8 +18,11 @@ namespace AuctionService.Controllers
             Logger = logger;
         }
 
+        protected UserDto CurrentUser => GetCurrentUser();
+
         protected RequestInformation RequestInformation => new RequestInformation
         {
+            CurrentUser = CurrentUser,
             CorrelationId = GetOrGenerateCorelationId()
         };
 
@@ -50,26 +54,15 @@ namespace AuctionService.Controllers
             return OkOrFailure(result);
         }
 
-        //protected IActionResult Failure(ValidationResult validationResult)
-        //{
-        //    var errors = validationResult;
-        //    var apiValidationResponse = new ApiValidationResponse
-        //    {
-        //        Errors = new List<FieldLevelError>(),
-        //        ErrorMessage = "Validation failed"
-        //    };
-        //    foreach (var error in errors)
-        //    {
-        //        var fieldLevelError = new FieldLevelError
-        //        {
-        //            Code = error.ErrorCode,
-        //            Field = error.PropertyName,
-        //            Message = error.ErrorMessage
-        //        };
-        //        apiValidationResponse.Errors.Add(fieldLevelError);
-        //    }
-        //    return BadRequest(apiValidationResponse);
-        //}
+        private UserDto GetCurrentUser()
+        {
+            return new UserDto
+            {
+                Id = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                Name = User.FindFirst("name").Value,
+                Username = User.FindFirst("username").Value
+            };
+        }
 
         protected string GetOrGenerateCorelationId() => Request?.GetRequestHeaderOrdefault("CorrelationId", $"GEN-{Guid.NewGuid().ToString()}");
 
