@@ -1,5 +1,4 @@
 ﻿using Duende.IdentityServer.Models;
-using IdentityModel;
 
 namespace IdentityService;
 

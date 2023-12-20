@@ -81,48 +81,56 @@ public class AuctionService : IAuctionService
         return Result<AuctionDto>.Success(result);
     }
 
-    public async Task<Result<AuctionDto>> CreateAuction(CreateAuctionDto createAuction, string correlationId)
+    public async Task<Result<AuctionDto>> CreateAuction(CreateAuctionDto createAuction, RequestInformation requestInformation)
     {
         _logger.Here().MethodEnterd();
         _logger.Here()
-            .WithCorrelationId(correlationId)
+            .WithCorrelationId(requestInformation.CorrelationId)
             .Information("Request -  create new auction {@auction}", createAuction);
 
         var auctionEntity = _mapper.Map<Auction>(createAuction);
-        auctionEntity.Seller = "test";
+        auctionEntity.Seller = requestInformation.CurrentUser.Username;
 
         _context.Add(auctionEntity);
         var newAuctionDto = _mapper.Map<AuctionDto>(auctionEntity);
 
         // public auction create event
-        await PublishMessage<AuctionDto, AuctionCreated>(newAuctionDto, correlationId);
+        await PublishMessage<AuctionDto, AuctionCreated>(newAuctionDto, requestInformation.CorrelationId);
 
         var createResult = await _context.SaveChangesAsync() > 0;
 
         if (!createResult)
         {
-            _logger.Here().WithCorrelationId(correlationId).Error("{category} - Could not save changes to the db", ErrorCodes.OperationFailed);
+            _logger.Here().WithCorrelationId(requestInformation.CorrelationId).Error("{category} - Could not save changes to the db", ErrorCodes.OperationFailed);
             return Result<AuctionDto>.Failure(ErrorCodes.OperationFailed);
         }
 
-        _logger.Here().WithCorrelationId(correlationId).Information("New auction created successfully with id {id}", auctionEntity.Id);
+        _logger.Here().WithCorrelationId(requestInformation.CorrelationId).Information("New auction created successfully with id {id}", auctionEntity.Id);
         _logger.Here().MethodExited();
         return Result<AuctionDto>.Success(_mapper.Map<AuctionDto>(auctionEntity));
     }
 
-    public async Task<Result<bool>> UpdateAuction(string id, UpdateAuctionDto updateAuction, string correlationId)
+    public async Task<Result<bool>> UpdateAuction(string id, UpdateAuctionDto updateAuction, RequestInformation requestInformation)
     {
         _logger.Here().MethodEnterd();
-        _logger.Here().WithCorrelationId(correlationId)
+        _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
             .Information("Request - update auction of {id} - {@updateAuction}", id, updateAuction);
 
         var auctionEntity = await _context.Auctions
             .Include(x => x.Item)
             .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
+        if (auctionEntity.Seller != requestInformation.CurrentUser.Username)
+        {
+            _logger.Here()
+                .WithCorrelationId(requestInformation.CorrelationId)
+                .Error("current user does not have authority to update the auction for {make}", auctionEntity.Item.Make);
+            return Result<bool>.Failure(ErrorCodes.Unauthorized);
+        }
+
         if (auctionEntity is null)
         {
-            _logger.Here().WithCorrelationId(correlationId)
+            _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
                 .Warning("No auction found with id {id}", id);
             return Result<bool>.Failure(ErrorCodes.NotFound);
         }
@@ -130,16 +138,16 @@ public class AuctionService : IAuctionService
         _mapper.Map(updateAuction, auctionEntity, typeof(UpdateAuctionDto), typeof(Auction));
         _context.Entry(auctionEntity).State = EntityState.Modified;
 
-        await PublishMessage<Auction, AuctionUpdated>(auctionEntity, correlationId);
+        await PublishMessage<Auction, AuctionUpdated>(auctionEntity, requestInformation.CorrelationId);
         var updateResult = await _context.SaveChangesAsync() > 0;
 
         if (!updateResult)
         {
-            _logger.Here().WithCorrelationId(correlationId).Error("{category} - Could not save changes to the db", ErrorCodes.OperationFailed);
+            _logger.Here().WithCorrelationId(requestInformation.CorrelationId).Error("{category} - Could not save changes to the db", ErrorCodes.OperationFailed);
             return Result<bool>.Failure(ErrorCodes.OperationFailed);
         }
 
-        _logger.Here().WithCorrelationId(correlationId).Information("Auction updated successfully");
+        _logger.Here().WithCorrelationId(requestInformation.CorrelationId).Information("Auction updated successfully");
         _logger.Here().MethodExited();
         return Result<bool>.Success(true);
     }
