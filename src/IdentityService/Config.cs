@@ -30,6 +30,18 @@ public static class Config
                 RedirectUris = { "https://www.getpostmane.com/oauth2/callback" }, // Not going to be used. nore redirection in postman testing 
                 ClientSecrets = new Secret[] { new Secret("P@ssw0rd".Sha256()) },
                 AllowedGrantTypes = { GrantType.ResourceOwnerPassword }
+            },
+            new Client
+            {
+                ClientId = "nextapp",
+                ClientName = "Next app",
+                ClientSecrets = new Secret[] { new Secret("P@ssw0rd".Sha256()) },
+                AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                RequirePkce = false,
+                RedirectUris = { "http://localhost:3000/api/auth/callbac/id-server" },
+                AllowOfflineAccess = true,
+                AllowedScopes = { "openid", "profile", "carsties.auction" },
+                AccessTokenLifetime = 3600*24*30
             }
         };
 }
