@@ -1,5 +1,6 @@
 ﻿using AuctionService.ConfigurationOptions.ElasticSearch;
 using AuctionService.ConfigurationOptions.Identity;
+using AuctionService.Consumers;
 using AuctionService.Data;
 using AuctionService.Swagger;
 using Carsties.Shared.Models.Core;
@@ -47,6 +48,8 @@ namespace AuctionService.DependencyInjections
                     o.UsePostgres();
                     o.UseBusOutbox();
                 });
+                config.AddConsumersFromNamespaceContaining<AuctionFinishedConsumer>();
+                config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
                 config.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.ConfigureEndpoints(context);
