@@ -1,7 +1,9 @@
 ﻿using AuctionService.ConfigurationOptions.ElasticSearch;
 using AuctionService.ConfigurationOptions.Identity;
+using AuctionService.ConfigurationOptions.ServiceBus;
 using AuctionService.Consumers;
 using AuctionService.Data;
+using AuctionService.Extensions;
 using AuctionService.Swagger;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
@@ -52,6 +54,14 @@ namespace AuctionService.DependencyInjections
                 config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
                 config.UsingRabbitMq((context, cfg) =>
                 {
+                    var rabbitmq = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>();            
+                    cfg.Host(rabbitmq.Host, "/", host =>
+                    {
+                        host.Username(rabbitmq.Username);
+                        host.Password(rabbitmq.Password);
+                    });
+                    cfg.ConfigureRecieveEndpoint<AuctionFinishedConsumer>("auction-auction-finished", context);
+                    cfg.ConfigureRecieveEndpoint<BidPlacedConsumer>("auction-bid-placed", context);
                     cfg.ConfigureEndpoints(context);
                 });
             });

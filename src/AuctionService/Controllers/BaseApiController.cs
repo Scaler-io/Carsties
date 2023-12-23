@@ -18,7 +18,7 @@ namespace AuctionService.Controllers
             Logger = logger;
         }
 
-        protected UserDto CurrentUser => GetCurrentUser();
+        protected UserDto CurrentUser => User.Identity.IsAuthenticated ? GetCurrentUser() : null;
 
         protected RequestInformation RequestInformation => new RequestInformation
         {

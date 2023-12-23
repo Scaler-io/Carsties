@@ -51,6 +51,32 @@ services:
       - portainer_data:/data
 
 
+  auctionSvc:
+    container_name: Carsties.AuctionService
+    image: trycatchlearn/auction-svc:latest
+    build: 
+      context: .
+      dockerfile: src/AuctionService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLs=http://+80
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft.AspNetCore=Warning
+      - AppConfigurations__ApplicationIdentifier=Carsties.AuctionService
+      - AppConfigurations__ApplicationEnvironment=Development
+      - Elasticsearch__Uri=http://elasticsearch:9200
+      - IdentityGroupAccess__Authority=http://identity-svc:5000
+      - IdentityGroupAccess__Audience=http://identity-svc:5000/resources
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - ConnectionStrings__CarstiesConnection=Server=postgres:5432;Database=AuctionDb;User Id=admin;Password=admin1234;
+    ports:
+      - 4001:80
+    depends_on:
+      - postgres
+      - rabbitmq
+
 volumes:
   postgres_data:    
   pgadmin_data:    
