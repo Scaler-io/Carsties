@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using SearchService.ConfigurationOptions.ElasticSearch;
+using SearchService.ConfigurationOptions.ServiceBus;
 using SearchService.Consumers;
 using SearchService.Extensions;
 using SearchService.Swagger;
@@ -36,13 +37,19 @@ public static class ServiceCollectionExtensions
         services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearch"));
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        
+
         services.AddMassTransit(config =>
         {
             config.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
             config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
             config.UsingRabbitMq((context, cfg) =>
             {
+                var rabbitmq = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>();
+                cfg.Host(rabbitmq.Host, "/", host =>
+                {
+                    host.Username(rabbitmq.Username);
+                    host.Password(rabbitmq.Password);
+                });
                 cfg.ConfigureRecieveEndpoint<AuctionCreatedConsumer>("search-auction-created", context);
                 cfg.ConfigureRecieveEndpoint<AuctionFinishedConsumer>("search-auction-finished", context);
                 cfg.ConfigureRecieveEndpoint<AuctionUpdatedConsumer>("search-auction-updated", context);

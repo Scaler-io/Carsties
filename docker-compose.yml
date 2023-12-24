@@ -60,8 +60,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLs=http://+80
-      - Logging__LogLevel__Default=Information
-      - Logging__LogLevel__Microsoft.AspNetCore=Warning
+      - Logging__IncludeScopes=false
+      - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}"
+      - Logging__Console__Enabled=true
+      - Logging__Console__LogLevel=Debug
+      - Logging__Elastic__Enabled=true
+      - Logging__Elastic__LogLevel=Debug
       - AppConfigurations__ApplicationIdentifier=Carsties.AuctionService
       - AppConfigurations__ApplicationEnvironment=Development
       - Elasticsearch__Uri=http://elasticsearch:9200
@@ -76,6 +80,34 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+  
+  searchSvc:
+    container_name: Carsties.SearchService
+    image: trycatchlearn/search-svc:latest
+    build:
+      context: .
+      dockerfile: src/SearchService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLs=http://+80
+      - Logging__IncludeScopes=false
+      - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}"
+      - Logging__Console__Enabled=true
+      - Logging__Console__LogLevel=Debug
+      - Logging__Elastic__Enabled=true
+      - Logging__Elastic__LogLevel=Debug
+      - AppConfigurations__ApplicationIdentifier=Carsties.SearchService
+      - AppConfigurations__ApplicationEnvironment=Development
+      - Elasticsearch__Uri=http://elasticsearch:9200
+      - ConnectionStrings__MongoDbConnection=mongodb://root:Passw0rd@mongodb
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+    ports:
+      - 4002:80
+    depends_on:
+      - mongodb
+      - rabbitmq    
 
 volumes:
   postgres_data:    
