@@ -134,6 +134,28 @@ services:
     depends_on:
       - postgres
 
+
+  gatewaySvc:
+    container_name: Carsties.GatewayService
+    image: trycatchlearn/gateway-svc:latest
+    build: 
+      context: .
+      dockerfile: src/GatewayService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLs=http://+80
+      - Logging__IncludeScopes=false
+      - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}{NewLine}"
+      - Logging__Console__Enabled=true
+      - Logging__Console__LogLevel=Debug
+      - Logging__Elastic__Enabled=true
+      - Logging__Elastic__LogLevel=Debug
+      - AppConfigurations__ApplicationIdentifier=Carsties.GatewayService
+      - AppConfigurations__ApplicationEnvironment=Docker
+      - Elasticsearch__Uri=http://elasticsearch:9200
+    ports:
+      - 4003:80
+
 volumes:
   postgres_data:    
   pgadmin_data:    
