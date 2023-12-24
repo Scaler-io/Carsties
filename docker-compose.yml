@@ -58,7 +58,7 @@ services:
       context: .
       dockerfile: src/AuctionService/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLs=http://+80
       - Logging__IncludeScopes=false
       - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}"
@@ -67,10 +67,10 @@ services:
       - Logging__Elastic__Enabled=true
       - Logging__Elastic__LogLevel=Debug
       - AppConfigurations__ApplicationIdentifier=Carsties.AuctionService
-      - AppConfigurations__ApplicationEnvironment=Development
+      - AppConfigurations__ApplicationEnvironment=Docker
       - Elasticsearch__Uri=http://elasticsearch:9200
-      - IdentityGroupAccess__Authority=http://identity-svc:5000
-      - IdentityGroupAccess__Audience=http://identity-svc:5000/resources
+      - IdentityGroupAccess__Authority=http://identitySvc
+      - IdentityGroupAccess__Audience=http://identitySvc/resources
       - RabbitMq__Host=rabbitmq
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest
@@ -80,6 +80,7 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+      - identitySvc
   
   searchSvc:
     container_name: Carsties.SearchService
@@ -88,7 +89,7 @@ services:
       context: .
       dockerfile: src/SearchService/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLs=http://+80
       - Logging__IncludeScopes=false
       - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}"
@@ -97,7 +98,7 @@ services:
       - Logging__Elastic__Enabled=true
       - Logging__Elastic__LogLevel=Debug
       - AppConfigurations__ApplicationIdentifier=Carsties.SearchService
-      - AppConfigurations__ApplicationEnvironment=Development
+      - AppConfigurations__ApplicationEnvironment=Docker
       - Elasticsearch__Uri=http://elasticsearch:9200
       - ConnectionStrings__MongoDbConnection=mongodb://root:Passw0rd@mongodb
       - RabbitMq__Host=rabbitmq
@@ -108,6 +109,30 @@ services:
     depends_on:
       - mongodb
       - rabbitmq    
+
+  identitySvc:
+    container_name: Carsties.IdentityService
+    image: trycatchlearn/identity-svc:latest
+    build: 
+      context: .
+      dockerfile: src/IdentityService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLs=http://+80
+      - Logging__IncludeScopes=false
+      - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}{NewLine}"
+      - Logging__Console__Enabled=true
+      - Logging__Console__LogLevel=Debug
+      - Logging__Elastic__Enabled=true
+      - Logging__Elastic__LogLevel=Debug
+      - AppConfigurations__ApplicationIdentifier=Carsties.IdentityService
+      - AppConfigurations__ApplicationEnvironment=Docker
+      - Elasticsearch__Uri=http://elasticsearch:9200
+      - ConnectionStrings__DefaultConnection=Server=postgres:5432;Database=Identity;User Id=admin;Password=admin1234;
+    ports:
+      - 5000:80
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:    
