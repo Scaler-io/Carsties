@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={tittlium.className}>
         <Navbar title={metadata.title.toString()} />
-        <main className="container mx-auto px-5 pt-10">{children}</main>
+        <main className="container mx-auto px-5 pt-10 pb-10">{children}</main>
       </body>
     </html>
   );
