@@ -5,35 +5,48 @@ import AppPagination from "../components/pagination/app-pagination";
 import { getAuctions } from "../services/auction.service";
 import { Auction } from "../models/auction";
 import Filter from "./filter";
+import { PageResult } from "../models/page-result";
+import { useParamsStore } from "../../hooks/useParamsStore";
+import { shallow } from "zustand/shallow";
+import qs from "query-string";
 
 const Listing = () => {
-  const [auctions, setAuctions] = useState<Auction[]>([]);
-  const [pageCount, setPageCount] = useState(0);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(4);
+  const [result, setResult] = useState<PageResult<Auction>>();
+  const params = useParamsStore(
+    (state) => ({
+      pageNumber: state.pageNumber,
+      pageSize: state.pageSize,
+      searchTerm: state.searchTerm,
+    }),
+    shallow
+  );
+  const setParams = useParamsStore((state) => state.setParams);
+  const url = qs.stringifyUrl({ url: "", query: params });
+  const setPageNumber = (pageNumber: number) => {
+    setParams({ pageNumber });
+  };
 
   useEffect(() => {
-    getAuctions(pageNumber, pageSize).then((data) => {
-      setAuctions(data.data);
-      setPageCount(data.pageCount);
+    getAuctions(url).then((result) => {
+      setResult(result);
     });
-  }, [pageNumber, pageSize]);
+  }, [url]);
 
-  if (auctions.length === 0) return <h3>Loading...</h3>;
+  if (!result) return <h3>Loading...</h3>;
 
   return (
     <>
-      <Filter pageSize={pageSize} setPageSize={setPageSize} />
+      <Filter />
       <div className="grid grid-cols-4 gap-6">
-        {auctions.map((auction) => (
+        {result.data.map((auction) => (
           <AuctionCard key={auction.id} auction={auction} />
         ))}
       </div>
       <div className="flex justify-center mt-4">
         <AppPagination
           pageChanged={setPageNumber}
-          currentPage={pageNumber}
-          pageCount={pageCount}
+          currentPage={params.pageNumber}
+          pageCount={result.pageCount}
         />
       </div>
     </>
