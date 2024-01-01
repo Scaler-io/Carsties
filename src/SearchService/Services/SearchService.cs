@@ -1,6 +1,5 @@
 using Carsties.Shared.Extensions.Logger;
 using Carsties.Shared.Models.Core;
-using Carsties.Shared.Models.Enums;
 using MongoDB.Entities;
 using SearchService.Entities;
 using SearchService.Models;

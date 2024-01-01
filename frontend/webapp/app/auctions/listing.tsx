@@ -17,6 +17,8 @@ const Listing = () => {
       pageNumber: state.pageNumber,
       pageSize: state.pageSize,
       searchTerm: state.searchTerm,
+      orderBy: state.orderBy,
+      filterBy: state.filterBy,
     }),
     shallow
   );
@@ -37,7 +39,7 @@ const Listing = () => {
   return (
     <>
       <Filter />
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-4 gap-6 mt-24">
         {result.data.map((auction) => (
           <AuctionCard key={auction.id} auction={auction} />
         ))}
