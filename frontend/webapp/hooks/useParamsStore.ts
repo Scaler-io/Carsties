@@ -6,11 +6,13 @@ interface State {
   pageSize: number;
   pageCount: number;
   searchTerm: string;
+  searchValue: string;
 }
 
 type Actions = {
   setParams: (params: Partial<State>) => void;
   reset: () => void;
+  setSearchValue: (value: string) => void;
 };
 
 const initialState: State = {
@@ -18,9 +20,10 @@ const initialState: State = {
   pageSize: 12,
   pageCount: 1,
   searchTerm: "",
+  searchValue: "",
 };
 
-export const useParamsStore =  createWithEqualityFn<State & Actions>((set) => ({
+export const useParamsStore = createWithEqualityFn<State & Actions>((set) => ({
   ...initialState,
 
   setParams: (newParams: Partial<State>) => {
@@ -34,4 +37,8 @@ export const useParamsStore =  createWithEqualityFn<State & Actions>((set) => ({
   },
 
   reset: () => set(initialState),
+
+  setSearchValue: (value: string) => {
+    set({ searchValue: value });
+  },
 }));
