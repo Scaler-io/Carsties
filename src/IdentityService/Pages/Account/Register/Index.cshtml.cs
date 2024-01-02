@@ -58,7 +58,8 @@ public class Index : PageModel
             {
                 await _userManager.AddClaimsAsync(user, new Claim[]
                 {
-                    new Claim(JwtClaimTypes.Name, Input.FullName)
+                    new Claim(JwtClaimTypes.Name, Input.FullName),
+                    new Claim(JwtClaimTypes.Email, Input.Email)
                 });
                 RegistrationSuccess = true;
                 _logger.Here().Information("{email} user created successfully", user.Email);
