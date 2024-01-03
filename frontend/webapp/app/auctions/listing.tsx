@@ -1,16 +1,17 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import AuctionCard from "./auction-card";
 import AppPagination from "../components/pagination/app-pagination";
 import { getAuctions } from "../services/auction.service";
 import { Auction } from "../models/auction";
-import Filter from "./filter";
 import { PageResult } from "../models/page-result";
 import { useParamsStore } from "../../hooks/useParamsStore";
 import { shallow } from "zustand/shallow";
 import qs from "query-string";
 import EmptyFilter from "../components/empty-filter/empty-filter";
 import Loader from "../components/loader/loader";
+import PageActions from "./page-actions/page-actions";
 
 const Listing = () => {
   const [result, setResult] = useState<PageResult<Auction>>();
@@ -41,7 +42,7 @@ const Listing = () => {
 
   return (
     <>
-      <Filter />
+      <PageActions />
 
       {result.total === 0 ? (
         <EmptyFilter showReset />

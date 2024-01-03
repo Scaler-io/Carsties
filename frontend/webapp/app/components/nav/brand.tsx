@@ -1,14 +1,24 @@
 "use client";
 
-import { useParamsStore } from "@/hooks/useParamsStore";
 import React from "react";
+import { useParamsStore } from "@/hooks/useParamsStore";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { AiOutlineCar } from "react-icons/ai";
 
 const Brand = () => {
+  const router = useRouter();
+  const pathName = usePathname();
   const resetParams = useParamsStore((state) => state.reset);
+
+  const doRestore = () => {
+    if (pathName !== "/") router.push("/");
+    resetParams();
+  };
+
   return (
     <div
-      onClick={resetParams}
+      onClick={doRestore}
       className="cursor-pointer max-w-[25%] flex items-center gap-x-2 text-3xl font-semibold text-accentBlue flex-wrap">
       <AiOutlineCar size={34} />
       <div>Carsties Auction</div>
