@@ -37,6 +37,14 @@ namespace AuctionService.DependencyInjections
                 options.ExampleFilters();
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("DefaultPolicy", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+                });
+            });
+
             services.AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
             services.ConfigureOptions<ConfigureSwaggerOptions>();
             services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearch"));
@@ -54,7 +62,7 @@ namespace AuctionService.DependencyInjections
                 config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
                 config.UsingRabbitMq((context, cfg) =>
                 {
-                    var rabbitmq = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>();            
+                    var rabbitmq = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>();
                     cfg.Host(rabbitmq.Host, "/", host =>
                     {
                         host.Username(rabbitmq.Username);

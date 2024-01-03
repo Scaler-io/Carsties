@@ -69,8 +69,14 @@ public static class ServiceCollectionExtensions
                 options.SubstituteApiVersionInUrl = true;
             });
 
+        services.AddCors(options =>
+        {
+            options.AddPolicy("DefaultPolicy", policy =>
+            {
+                policy.WithOrigins("http://localhost:3000/").AllowAnyMethod().AllowAnyHeader();
+            });
+        });
         services.AddHttpContextAccessor();
-
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.InvalidModelStateResponseFactory = HandleFrameworkValidationFailure();
