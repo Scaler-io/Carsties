@@ -10,6 +10,7 @@ import { useParamsStore } from "../../hooks/useParamsStore";
 import { shallow } from "zustand/shallow";
 import qs from "query-string";
 import EmptyFilter from "../components/empty-filter/empty-filter";
+import Loader from "../components/loader/loader";
 
 const Listing = () => {
   const [result, setResult] = useState<PageResult<Auction>>();
@@ -25,6 +26,7 @@ const Listing = () => {
   );
   const setParams = useParamsStore((state) => state.setParams);
   const url = qs.stringifyUrl({ url: "", query: params });
+
   const setPageNumber = (pageNumber: number) => {
     setParams({ pageNumber });
   };
@@ -35,7 +37,7 @@ const Listing = () => {
     });
   }, [url]);
 
-  if (!result) return <h3>Loading...</h3>;
+  if (!result) return <Loader />;
 
   return (
     <>

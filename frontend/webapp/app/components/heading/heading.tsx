@@ -2,7 +2,7 @@ import React from "react";
 
 interface Props {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   center?: boolean;
 }
 
