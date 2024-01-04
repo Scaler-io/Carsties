@@ -73,7 +73,7 @@ public static class ServiceCollectionExtensions
         {
             options.AddPolicy("DefaultPolicy", policy =>
             {
-                policy.WithOrigins("http://localhost:3000/").AllowAnyMethod().AllowAnyHeader();
+                policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
             });
         });
         services.AddHttpContextAccessor();

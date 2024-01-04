@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("DefaultPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
     });
 });
 
@@ -44,10 +44,10 @@ var app = builder.Build();
 
 try
 {
+    app.UseCors("DefaultPolicy");
     app.MapReverseProxy();
     app.UseAuthentication();
     app.UseAuthorization();
-    app.UseCors("DefaultPolicy");
     app.Run();
 }
 finally

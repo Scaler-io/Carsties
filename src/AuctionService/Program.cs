@@ -30,10 +30,11 @@ if (app.Environment.IsDevelopment())
             options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Carsties auction api - {description.GroupName.ToUpperInvariant()}");
         }
     });
-    app.UseCors("DefaultPolicy");
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("DefaultPolicy");
 
 app.UseAuthorization();
 
