@@ -27,7 +27,7 @@ public static class Config
             {
                 ClientId = "postman",
                 ClientName = "Postman",
-                AllowedScopes = { "openid", "profile", "carsties.auction" },
+                AllowedScopes = { "openid", "profile", "email", "carsties.auction" },
                 RedirectUris = { "https://www.getpostmane.com/oauth2/callback" }, // Not going to be used. nore redirection in postman testing 
                 ClientSecrets = new Secret[] { new Secret("P@ssw0rd".Sha256()) },
                 AllowedGrantTypes = { GrantType.ResourceOwnerPassword }

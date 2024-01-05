@@ -14,12 +14,12 @@ export const updateAuction = async (token: string) => {
     milage: Math.floor(Math.random() * 100000) + 1,
   };
   const res = await fetch(
-    "http://localhost:4003/auctions/3659ac24-29dd-407a-81f5-ecfe6f924b9b",
+    "http://localhost:4003/auctions/81737de8-1a9e-4183-bfb5-2c08a18dead6",
     {
       method: "PUT",
       headers: {
         "Content-type": "application/json",
-        Authorization: "Bearer " + token,
+        'Authorization': "Bearer " + token,
       },
       body: JSON.stringify(data),
     }
