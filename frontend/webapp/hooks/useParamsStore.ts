@@ -1,4 +1,3 @@
-import { create } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 
 interface State {
@@ -9,6 +8,8 @@ interface State {
   searchValue: string;
   orderBy: string;
   filterBy: string;
+  seller?: string;
+  winner?: string;
 }
 
 type Actions = {
@@ -25,6 +26,8 @@ const initialState: State = {
   searchValue: "",
   orderBy: "make",
   filterBy: "live",
+  seller: undefined,
+  winner: undefined,
 };
 
 export const useParamsStore = createWithEqualityFn<State & Actions>((set) => ({
