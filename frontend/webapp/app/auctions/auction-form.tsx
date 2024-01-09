@@ -5,14 +5,25 @@ import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import TextField from "../components/text-field/text-field";
 import DateInput from "../components/date-input/date-input";
+import { createAuction } from "../services/auction.service";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const AuctionForm = () => {
-  const {control, handleSubmit, formState: { isSubmitting }} = useForm({
+  const router = useRouter();
+  const {control, handleSubmit, formState: { isSubmitting, isValid }} = useForm({
     mode: 'onTouched'
   });
-
-  const onSubmit = (data: FieldValues) => {
-    console.log(data);
+  const onSubmit = async (data: FieldValues) => {
+    try {
+      const res = await createAuction(data);
+      if(res.error){
+        throw res.error;
+      }
+      router.push(`/auctions/details/${res.id}`)
+    } catch (error) {
+      toast.error(error.status + ' ' + error.message);
+    }
   };
 
   return (
@@ -39,7 +50,7 @@ const AuctionForm = () => {
         <Button outline color="gray">
           Cancel
         </Button>
-        <Button isProcessing={isSubmitting} type="submit" outline color="success">
+        <Button disabled={!isValid} isProcessing={isSubmitting} type="submit" outline color="success">
           Submit
         </Button>
       </div>

@@ -16,7 +16,7 @@ const Session = async () => {
         <pre>{JSON.stringify(session, null, 2)}</pre>
       </div>
       <div className="mt-4">
-        <AuthTest token={token?.access_token} />
+        <AuthTest />
       </div>
       <div className="bg-green-200 shadow-md rounded-lg p-5 mt-4 overflow-auto">
         <h3 className="text-lg">Token data</h3>

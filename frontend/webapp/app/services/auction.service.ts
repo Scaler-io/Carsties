@@ -1,31 +1,31 @@
+"use server";
+
+import { fetchWrapper } from "@/lib/fetchWrapper";
 import { Auction } from "../models/auction";
 import { PageResult } from "../models/page-result";
+import { FieldValue, FieldValues } from "react-hook-form";
 
 export const getAuctions = async (
   url: string
 ): Promise<PageResult<Auction>> => {
-  const res = await fetch(`http://localhost:4003/search${url}`);
-  if (!res.ok) throw new Error("Failed to fetch data");
-  return res.json();
+  return fetchWrapper.get(`search${url}`);
 };
 
-export const updateAuction = async (token: string) => {
+export const updateAuction = async () => {
   const data = {
+    make: "BMW",
+    model: "GT",
+    year: 2022,
+    color: "white",
     milage: Math.floor(Math.random() * 100000) + 1,
   };
-  const res = await fetch(
-    "http://localhost:4003/auctions/81737de8-1a9e-4183-bfb5-2c08a18dead6",
-    {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-        'Authorization': "Bearer " + token,
-      },
-      body: JSON.stringify(data),
-    }
+
+  return await fetchWrapper.put(
+    "auctions/466e4744-4dc5-4987-aae0-b621acfc5e39",
+    data
   );
-
-  if (!res.ok) return { status: res.status, message: res.statusText };
-
-  return res;
 };
+
+export const createAuction = async (data: FieldValues) => {
+  return await fetchWrapper.post('auctions', data);
+}

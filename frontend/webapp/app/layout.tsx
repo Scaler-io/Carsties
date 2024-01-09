@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Titillium_Web } from "next/font/google";
 import Navbar from "./components/nav/navbar";
 import "./globals.css";
+import ToasterProvider from "./prroviders/toaster-prrovider";
 
 const tittlium = Titillium_Web({
   weight: ["200", "400", "600", "700"],
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={tittlium.className}>
+        <ToasterProvider />
         <Navbar />
         <main className="container mx-auto px-5 pt-10 pb-10">{children}</main>
       </body>

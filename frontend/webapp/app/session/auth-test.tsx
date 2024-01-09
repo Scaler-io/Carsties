@@ -4,17 +4,14 @@ import React, { useState } from "react";
 import { updateAuction } from "../services/auction.service";
 import { Button } from "flowbite-react";
 
-interface Props {
-  token: string;
-}
-const AuthTest = ({ token }: Props) => {
+const AuthTest = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState();
 
   function doUpdate() {
     setResult(undefined);
     setLoading(true);
-    updateAuction(token)
+    updateAuction()
       .then((res: any) => setResult(res))
       .finally(() => setLoading(false));
   }

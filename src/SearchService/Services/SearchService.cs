@@ -23,7 +23,6 @@ public class SearchService : ISearchService
             .Information("Request - search items with {searchTerms}", queryParam.SearchTerm);
 
         var query = DB.PagedSearch<Item, Item>();
-        query.Sort(x => x.Ascending(a => a.Make));
 
         ApplyFullTextSearch(query, queryParam.SearchTerm);
         ApplyPaging(query, queryParam.PageNumber, queryParam.PageSize);
