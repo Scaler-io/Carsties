@@ -26,3 +26,7 @@ export const updateAuction = async (data: FieldValues, id: string) => {
   revalidatePath(`/auctions/${id}`);
   return res;
 };
+
+export const deleteAuction = async (id: string) => {
+  return await fetchWrapper.del(`auctions/${id}`);
+}

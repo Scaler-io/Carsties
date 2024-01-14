@@ -5,8 +5,8 @@ import React from "react";
 import CarImage from "../../car-image";
 import DetailsSpec from "./details-spec";
 import { getCurrentUser } from "@/app/services/auth.service";
-import { Button } from "flowbite-react";
-import Link from "next/link";
+import EditButton from "./edit-button";
+import DeleteButton from "./delete-button";
 
 const AuctionDetails = async ({ params }: { params: { id: string } }) => {
   const data = await getAuctionDetailedView(params.id);
@@ -18,9 +18,10 @@ const AuctionDetails = async ({ params }: { params: { id: string } }) => {
         <div className="flex items-center gap-3">
           <Heading title={`${data.item.make} ${data.item.model}`}></Heading>
           {user?.username === data.seller && (
-            <Button outline color="info">
-              <Link href={`/auctions/update/${data.id}`}>Update Auction</Link>
-            </Button>
+            <>
+              <EditButton id={data.id} />
+              <DeleteButton id={data.id} />
+            </>
           )}
         </div>
         <div className="flex gap-3">
