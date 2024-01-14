@@ -3,29 +3,26 @@
 import { fetchWrapper } from "@/lib/fetchWrapper";
 import { Auction } from "../models/auction";
 import { PageResult } from "../models/page-result";
-import { FieldValue, FieldValues } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
+import { AuctionSearch } from "../models/auction-serach";
+import { revalidatePath } from "next/cache";
 
 export const getAuctions = async (
   url: string
-): Promise<PageResult<Auction>> => {
+): Promise<PageResult<AuctionSearch>> => {
   return fetchWrapper.get(`search${url}`);
 };
 
-export const updateAuction = async () => {
-  const data = {
-    make: "BMW",
-    model: "GT",
-    year: 2022,
-    color: "white",
-    milage: Math.floor(Math.random() * 100000) + 1,
-  };
-
-  return await fetchWrapper.put(
-    "auctions/466e4744-4dc5-4987-aae0-b621acfc5e39",
-    data
-  );
+export const createAuction = async (data: FieldValues) => {
+  return await fetchWrapper.post("auctions", data);
 };
 
-export const createAuction = async (data: FieldValues) => {
-  return await fetchWrapper.post('auctions', data);
-}
+export const getAuctionDetailedView = async (id: string): Promise<Auction> => {
+  return await fetchWrapper.get(`auctions/${id}`);
+};
+
+export const updateAuction = async (data: FieldValues, id: string) => {
+  const res = await fetchWrapper.put(`auctions/${id}`, data);
+  revalidatePath(`/auctions/${id}`);
+  return res;
+};

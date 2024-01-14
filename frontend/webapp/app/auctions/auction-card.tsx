@@ -1,11 +1,11 @@
 import React from "react";
 import CountdownTimer from "../components/timer/countdown-timer";
 import CarImage from "./car-image";
-import { Auction } from "../models/auction";
 import Link from "next/link";
+import { AuctionSearch } from "../models/auction-serach";
 
 interface Props{
-  auction: Auction;
+  auction: AuctionSearch;
 };
 
 const AuctionCard = ({ auction }: Props) => {

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import AuctionCard from "./auction-card";
 import AppPagination from "../components/pagination/app-pagination";
 import { getAuctions } from "../services/auction.service";
-import { Auction } from "../models/auction";
 import { PageResult } from "../models/page-result";
 import { useParamsStore } from "../../hooks/useParamsStore";
 import { shallow } from "zustand/shallow";
@@ -12,9 +11,10 @@ import qs from "query-string";
 import EmptyFilter from "../components/empty-filter/empty-filter";
 import Loader from "../components/loader/loader";
 import PageActions from "./page-actions/page-actions";
+import { AuctionSearch } from "../models/auction-serach";
 
 const Listing = () => {
-  const [result, setResult] = useState<PageResult<Auction>>();
+  const [result, setResult] = useState<PageResult<AuctionSearch>>();
   const params = useParamsStore(
     (state) => ({
       pageNumber: state.pageNumber,
@@ -23,7 +23,7 @@ const Listing = () => {
       orderBy: state.orderBy,
       filterBy: state.filterBy,
       seller: state.seller,
-      winner: state.winner
+      winner: state.winner,
     }),
     shallow
   );
