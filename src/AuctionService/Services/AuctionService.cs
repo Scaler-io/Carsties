@@ -152,6 +152,47 @@ public class AuctionService : IAuctionService
         return Result<bool>.Success(true);
     }
 
+    public async Task<Result<bool>> DeleteAuction(string id, RequestInformation requestInformation)
+    {
+        _logger.Here().MethodEnterd();
+        _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
+            .Information("Request - delete auction of {id}", id);
+
+        var auctionEntity = await _context.Auctions
+            .Include(x => x.Item)
+            .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+
+        if (auctionEntity is null)
+        {
+            _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
+                .Warning("No auction found with id {id}", id);
+            return Result<bool>.Failure(ErrorCodes.NotFound);
+        }
+
+        if (auctionEntity.Seller != requestInformation.CurrentUser.Username)
+        {
+            _logger.Here()
+                .WithCorrelationId(requestInformation.CorrelationId)
+                .Error("current user does not have authority to delete the auction for {make}", auctionEntity.Item.Make);
+            return Result<bool>.Failure(ErrorCodes.Unauthorized);
+        }
+
+        _context.Auctions.Remove(auctionEntity);
+        await PublishMessage<Auction, AuctionDeleted>(auctionEntity, requestInformation.CorrelationId);
+
+        var deleteResult = await _context.SaveChangesAsync() > 0;
+
+        if (!deleteResult)
+        {
+            _logger.Here().WithCorrelationId(requestInformation.CorrelationId).Error("{category} - Could not save changes to the db", ErrorCodes.OperationFailed);
+            return Result<bool>.Failure(ErrorCodes.OperationFailed);
+        }
+
+        _logger.Here().WithCorrelationId(requestInformation.CorrelationId).Information("Auction updated successfully");
+        _logger.Here().MethodExited();
+        return Result<bool>.Success(true);
+    }
+
     private async Task PublishMessage<T, TEvent>(T newAuction, string correlationId)
     {
         var newEvent = _mapper.Map<TEvent>(newAuction);

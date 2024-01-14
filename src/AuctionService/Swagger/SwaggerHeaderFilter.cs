@@ -8,7 +8,7 @@ namespace AuctionService.Swagger
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var headers = context.MethodInfo?.GetCustomAttributes(true).OfType<SwaggerHeaderAttribute>();
-            if(operation.Parameters == null)
+            if (operation.Parameters == null)
             {
                 operation.Parameters = new List<OpenApiParameter>();
             }
@@ -21,6 +21,7 @@ namespace AuctionService.Swagger
                     Description = header.Description,
                     Required = header.Required,
                     Deprecated = header.Deprecated,
+                    Schema = new OpenApiSchema { Type = header.Type }
                 });
             }
         }

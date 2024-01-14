@@ -33,8 +33,8 @@ namespace AuctionService.DependencyInjections
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();
-                options.OperationFilter<SwaggerHeaderFilter>();
                 options.ExampleFilters();
+                options.OperationFilter<SwaggerHeaderFilter>();
             });
 
             services.AddCors(options =>

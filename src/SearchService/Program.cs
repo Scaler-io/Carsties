@@ -21,18 +21,14 @@ var app = builder.Build();
 
 var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    foreach (var description in provider.ApiVersionDescriptions)
     {
-        foreach (var description in provider.ApiVersionDescriptions)
-        {
-            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Carsties search api - {description.GroupName.ToUpperInvariant()}");
-        }
-    });
-}
-
+        options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Carsties search api - {description.GroupName.ToUpperInvariant()}");
+    }
+});
 app.UseHttpsRedirection();
 
 app.UseCors("DefaultPolicy");
