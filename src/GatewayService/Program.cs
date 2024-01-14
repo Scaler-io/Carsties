@@ -9,12 +9,21 @@ var builder = WebApplication.CreateBuilder(args);
 var logger = Logging.GetLogger(builder.Configuration, builder.Environment);
 builder.Host.UseSerilog(logger);
 
+
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var identityGroupAccess = builder.Configuration
                 .GetSection("IdentityGroupAccess")
                 .Get<IdentityGroupAccessOptions>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+    });
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
@@ -35,6 +44,7 @@ var app = builder.Build();
 
 try
 {
+    app.UseCors("DefaultPolicy");
     app.MapReverseProxy();
     app.UseAuthentication();
     app.UseAuthorization();

@@ -53,6 +53,7 @@ public static class ServiceCollectionExtensions
                 cfg.ConfigureRecieveEndpoint<AuctionCreatedConsumer>("search-auction-created", context);
                 cfg.ConfigureRecieveEndpoint<AuctionFinishedConsumer>("search-auction-finished", context);
                 cfg.ConfigureRecieveEndpoint<AuctionUpdatedConsumer>("search-auction-updated", context);
+                cfg.ConfigureRecieveEndpoint<AuctionDeletedConsumer>("search-auction-deleted", context);
                 cfg.ConfigureRecieveEndpoint<BidPlacedConsumer>("search-bid-placed", context);
                 cfg.ConfigureEndpoints(context);
             });
@@ -69,8 +70,14 @@ public static class ServiceCollectionExtensions
                 options.SubstituteApiVersionInUrl = true;
             });
 
+        services.AddCors(options =>
+        {
+            options.AddPolicy("DefaultPolicy", policy =>
+            {
+                policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+            });
+        });
         services.AddHttpContextAccessor();
-
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.InvalidModelStateResponseFactory = HandleFrameworkValidationFailure();

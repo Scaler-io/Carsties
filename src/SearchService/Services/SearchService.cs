@@ -1,6 +1,5 @@
 using Carsties.Shared.Extensions.Logger;
 using Carsties.Shared.Models.Core;
-using Carsties.Shared.Models.Enums;
 using MongoDB.Entities;
 using SearchService.Entities;
 using SearchService.Models;
@@ -24,7 +23,6 @@ public class SearchService : ISearchService
             .Information("Request - search items with {searchTerms}", queryParam.SearchTerm);
 
         var query = DB.PagedSearch<Item, Item>();
-        query.Sort(x => x.Ascending(a => a.Make));
 
         ApplyFullTextSearch(query, queryParam.SearchTerm);
         ApplyPaging(query, queryParam.PageNumber, queryParam.PageSize);
@@ -76,7 +74,7 @@ public class SearchService : ISearchService
     {
         query = orderBy switch
         {
-            "make" => query.Sort(x => x.Ascending(a => a.Make)),
+            "make" => query.Sort(x => x.Ascending(a => a.Make)).Sort(x => x.Ascending(a => a.Model)),
             "new" => query.Sort(x => x.Descending(a => a.CreatedAt)),
             _ => query.Sort(x => x.Ascending(a => a.AuctionEnd))
         };

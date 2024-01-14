@@ -9,4 +9,5 @@ public interface IAuctionService
     Task<Result<AuctionDto>> GetAuction(string id, string correlationId);
     Task<Result<AuctionDto>> CreateAuction(CreateAuctionDto createAuction, RequestInformation requestInformation);
     Task<Result<bool>> UpdateAuction(string id, UpdateAuctionDto updateAuction, RequestInformation requestInformation);
+    Task<Result<bool>> DeleteAuction(string id, RequestInformation requestInformation);
 }

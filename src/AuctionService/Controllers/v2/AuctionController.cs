@@ -64,4 +64,16 @@ public class AuctionController : BaseApiController
         Logger.Here().MethodExited();
         return OkOrFailure(result);
     }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+    [SwaggerOperation(OperationId = "")]
+    public async Task<IActionResult> DeleteAuction([FromRoute] string id)
+    {
+        Logger.Here().MethodEnterd();
+        var result = await _auctionService.DeleteAuction(id, RequestInformation);
+        Logger.Here().MethodExited();
+        return OkOrFailure(result);
+    }
 }
