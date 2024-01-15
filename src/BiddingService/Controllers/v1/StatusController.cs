@@ -1,14 +1,14 @@
 ﻿using BiddingService.Swagger;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Net;
+using Carsties.Shared.Extensions.Logger;
 
 namespace BiddingService.Controllers.v1;
 
 [ApiVersion("1")]
 public class StatusController : BaseApiController
 {
-    public StatusController(ILogger logger) : 
+    public StatusController(ILogger logger) :
         base(logger)
     {
     }
@@ -18,7 +18,9 @@ public class StatusController : BaseApiController
     [SwaggerOperation(OperationId = "HelathCheck", Description = "Get api health status")]
     public IActionResult HelathCheck()
     {
+        Logger.Here().MethodEnterd();
         var healthResult = new { Status = "Ok" };
+        Logger.Here().MethodExited();
         return Ok(healthResult);
     }
 }
