@@ -11,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 var logger = Logging.GetLogger(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(x => logger);
 
-builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration)
+        .AddBusinessLogicServices();
 
 await DB.InitAsync("BidDb", MongoClientSettings
         .FromConnectionString(builder.Configuration.GetConnectionString("MongoDbConnection")));
