@@ -1,7 +1,7 @@
 ﻿using BiddingService.Swagger;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 using Carsties.Shared.Extensions.Logger;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace BiddingService.Controllers.v1;
 

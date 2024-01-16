@@ -8,7 +8,6 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace BiddingService.Controllers.v2;
 
 [ApiVersion("2")]
-[Authorize]
 public class BidsController : BaseApiController
 {
     private IBidService _bidService;
@@ -30,6 +29,7 @@ public class BidsController : BaseApiController
     }
 
     [HttpPost]
+    [Authorize]
     [SwaggerHeader("CorrelationId", Description = "expects unique correlation id", Type = "string")]
     [SwaggerOperation(OperationId = "PlaceBid", Description = "Places a new bid against auction")]
     public async Task<IActionResult> PlaceBid(string auctionId, int amount)

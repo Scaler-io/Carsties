@@ -1,7 +1,9 @@
 ﻿using BiddingService.ConfigurationOptions.ElasticSearch;
 using BiddingService.ConfigurationOptions.Identity;
 using BiddingService.ConfigurationOptions.ServiceBus;
+using BiddingService.Consumers;
 using BiddingService.Swagger;
+using Carsties.Shared.Contracts;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
 using MassTransit;
@@ -55,6 +57,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddMassTransit(config =>
         {
+            config.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
             config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("bids", false));
             config.UsingRabbitMq((context, cfg) =>
             {

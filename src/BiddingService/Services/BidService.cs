@@ -1,4 +1,6 @@
+using AutoMapper;
 using BiddingService.Models;
+using BiddingService.Models.DTOs;
 using Carsties.Shared.Extensions.Logger;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
@@ -9,13 +11,15 @@ namespace BiddingService.Services;
 public class BidService : IBidService
 {
     private readonly ILogger _logger;
+    private readonly IMapper _mapper;
 
-    public BidService(ILogger logger)
+    public BidService(ILogger logger, IMapper mapper)
     {
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task<Result<IReadOnlyList<Bid>>> GetAuctionBids(string auctionId, RequestInformation requestInformation)
+    public async Task<Result<IReadOnlyList<BidDto>>> GetAuctionBids(string auctionId, RequestInformation requestInformation)
     {
         _logger.Here().MethodEnterd();
         _logger.Here().WithCorrelationId(requestInformation.CorrelationId).Information("Request - get all bids for auction {auctionId}", auctionId);
@@ -29,13 +33,15 @@ public class BidService : IBidService
         {
             _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
             .Error("No bids were found for the auction {auctionId}", auctionId);
-            return Result<IReadOnlyList<Bid>>.Failure(ErrorCodes.NotFound);
+            return Result<IReadOnlyList<BidDto>>.Failure(ErrorCodes.NotFound);
         }
 
+        var dto = _mapper.Map<IReadOnlyList<BidDto>>(bids);
+
         _logger.Here().MethodExited();
-        return Result<IReadOnlyList<Bid>>.Success(bids);
+        return Result<IReadOnlyList<BidDto>>.Success(dto);
     }
-    public async Task<Result<Bid>> PlaceNewBid(string auctionId, int amount, RequestInformation requestInformation)
+    public async Task<Result<BidDto>> PlaceNewBid(string auctionId, int amount, RequestInformation requestInformation)
     {
         _logger.Here().MethodEnterd();
         _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
@@ -46,24 +52,26 @@ public class BidService : IBidService
         {
             _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
                 .Error("No auction was found with id {auctionId}", auctionId);
-            return Result<Bid>.Failure(ErrorCodes.NotFound);
+            return Result<BidDto>.Failure(ErrorCodes.NotFound);
         }
 
         if (auction.Seller == requestInformation.CurrentUser.Name)
         {
             _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
             .Error("user cannot bid on own auction");
-            return Result<Bid>.Failure(ErrorCodes.BadRequest);
+            return Result<BidDto>.Failure(ErrorCodes.BadRequest);
         }
 
         var bid = await PrepareNewBid(auctionId, amount, requestInformation, auction);
         await DB.SaveAsync(bid);
 
+        var dto = _mapper.Map<BidDto>(bid);
+
         _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
             .Information("New bid has been placed");
         _logger.Here().MethodExited();
 
-        return Result<Bid>.Success(bid);
+        return Result<BidDto>.Success(dto);
     }
 
     private static async Task<Bid> PrepareNewBid(string auctionId, int amount, RequestInformation requestInformation, Auction auction)

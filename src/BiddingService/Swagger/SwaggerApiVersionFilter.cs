@@ -7,11 +7,15 @@ namespace BiddingService.Swagger
     {
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            foreach (var path in swaggerDoc.Paths.ToList())
+            foreach (var description in context.ApiDescriptions)
             {
-                var newPath = path.Key.Replace("/api/v1", string.Empty);
-                swaggerDoc.Paths.Remove(path.Key);
-                swaggerDoc.Paths.Add(newPath, path.Value);
+                foreach (var path in swaggerDoc.Paths.ToList())
+                {
+                    var newPath = path.Key.Replace($"/api/{description.GroupName}", string.Empty);
+                    swaggerDoc.Paths.Remove(path.Key);
+                    swaggerDoc.Paths.Add(newPath, path.Value);
+                }
+
             }
         }
     }
