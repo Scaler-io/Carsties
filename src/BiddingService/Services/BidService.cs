@@ -1,9 +1,11 @@
 using AutoMapper;
 using BiddingService.Models;
 using BiddingService.Models.DTOs;
+using Carsties.Shared.Contracts;
 using Carsties.Shared.Extensions.Logger;
 using Carsties.Shared.Models.Core;
 using Carsties.Shared.Models.Enums;
+using MassTransit;
 using MongoDB.Entities;
 
 namespace BiddingService.Services;
@@ -12,11 +14,15 @@ public class BidService : IBidService
 {
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public BidService(ILogger logger, IMapper mapper)
+    public BidService(ILogger logger,
+        IMapper mapper,
+        IPublishEndpoint publishEndpoint)
     {
         _logger = logger;
         _mapper = mapper;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Result<IReadOnlyList<BidDto>>> GetAuctionBids(string auctionId, RequestInformation requestInformation)
@@ -65,6 +71,8 @@ public class BidService : IBidService
         var bid = await PrepareNewBid(auctionId, amount, requestInformation, auction);
         await DB.SaveAsync(bid);
 
+        await _publishEndpoint.Publish(_mapper.Map<BidPlaced>(bid));
+
         var dto = _mapper.Map<BidDto>(bid);
 
         _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
@@ -73,7 +81,6 @@ public class BidService : IBidService
 
         return Result<BidDto>.Success(dto);
     }
-
     private static async Task<Bid> PrepareNewBid(string auctionId, int amount, RequestInformation requestInformation, Auction auction)
     {
         var bid = new Bid
@@ -106,6 +113,5 @@ public class BidService : IBidService
 
         return bid;
     }
-
 
 }
