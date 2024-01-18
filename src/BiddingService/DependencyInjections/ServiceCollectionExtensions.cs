@@ -2,6 +2,7 @@
 using BiddingService.ConfigurationOptions.Identity;
 using BiddingService.ConfigurationOptions.ServiceBus;
 using BiddingService.Consumers;
+using BiddingService.Services.Background;
 using BiddingService.Swagger;
 using Carsties.Shared.Contracts;
 using Carsties.Shared.Models.Core;
@@ -107,6 +108,8 @@ public static class ServiceCollectionExtensions
                 NameClaimType = "username"
             };
         });
+
+        services.AddHostedService<AuctionFinishedBackgroundService>();
 
         return services;
     }
