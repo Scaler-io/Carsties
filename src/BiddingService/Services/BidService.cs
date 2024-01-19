@@ -1,6 +1,7 @@
 using AutoMapper;
 using BiddingService.Models;
 using BiddingService.Models.DTOs;
+using BiddingService.Services.Grpc;
 using Carsties.Shared.Contracts;
 using Carsties.Shared.Extensions.Logger;
 using Carsties.Shared.Models.Core;
@@ -14,15 +15,18 @@ public class BidService : IBidService
 {
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
+    private readonly GrpcAuctionClient _grpcAuctionClient;
     private readonly IPublishEndpoint _publishEndpoint;
 
     public BidService(ILogger logger,
         IMapper mapper,
-        IPublishEndpoint publishEndpoint)
+        IPublishEndpoint publishEndpoint,
+        GrpcAuctionClient grpcAuctionClient)
     {
         _logger = logger;
         _mapper = mapper;
         _publishEndpoint = publishEndpoint;
+        _grpcAuctionClient = grpcAuctionClient;
     }
 
     public async Task<Result<IReadOnlyList<BidDto>>> GetAuctionBids(string auctionId, RequestInformation requestInformation)
@@ -56,9 +60,15 @@ public class BidService : IBidService
         var auction = await DB.Find<Auction>().OneAsync(auctionId);
         if (auction is null)
         {
-            _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
+            var result = _grpcAuctionClient.GetAuction(auctionId, requestInformation.CorrelationId);
+            if (!result.IsSuccess)
+            {
+                _logger.Here().WithCorrelationId(requestInformation.CorrelationId)
                 .Error("No auction was found with id {auctionId}", auctionId);
-            return Result<BidDto>.Failure(ErrorCodes.NotFound);
+                return Result<BidDto>.Failure(ErrorCodes.NotFound);
+            }
+
+            auction = result.Value;
         }
 
         if (auction.Seller == requestInformation.CurrentUser.Name)

@@ -15,7 +15,7 @@ public class Logging
         var loggingOptions = configuration.GetSection("Logging").Get<LoggingOptions>();
         var appConfigurations = configuration.GetSection("AppConfigurations").Get<AppOptions>();
         var elasticUri = configuration.GetSection("Elasticsearch").Get<ElasticSearchOptions>();
-        var logIndexPattern = $"Carsties.AuctionService-{environment.EnvironmentName}";
+        var logIndexPattern = $"Carsties.Bidding-{environment.EnvironmentName}";
 
         Enum.TryParse(loggingOptions.Console.LogLevel, false, out LogEventLevel minimumEventLevel);
 

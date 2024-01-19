@@ -84,6 +84,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLs=http://+80
+      - ASPNETCORE_URLs=http://+7777
       - Logging__IncludeScopes=false
       - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}"
       - Logging__Console__Enabled=true
@@ -99,13 +100,50 @@ services:
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest
       - ConnectionStrings__CarstiesConnection=Server=postgres:5432;Database=AuctionDb;User Id=admin;Password=admin1234;
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
+      - Kestrel__Endpoints__Grpc__Url=http://+:7777
+      - Kestrel__Endpoints__WebApi__Protocols=Http1
+      - Kestrel__Endpoints__WebApi__Url=http://+:80
     ports:
       - 4001:80
+      - 7777:7777
     depends_on:
       - postgres
       - rabbitmq
       - identitySvc
-  
+
+  bidSvc:
+    container_name: Carsties.BiddingService
+    image: trycatchlearn/bids-dvc:latest
+    build: 
+      context: .
+      dockerfile: src/BiddingService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLs=http://+80
+      - Logging__IncludeScopes=false
+      - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}"
+      - Logging__Console__Enabled=true
+      - Logging__Console__LogLevel=Debug
+      - Logging__Elastic__Enabled=true
+      - Logging__Elastic__LogLevel=Debug
+      - IdentityGroupAccess__Authority=http://identitySvc
+      - IdentityGroupAccess__Audience=http://identitySvc/resources
+      - AppConfigurations__ApplicationIdentifier=Carsties.BiddingService
+      - AppConfigurations__ApplicationEnvironment=Docker
+      - Elasticsearch__Uri=http://elasticsearch:9200
+      - ConnectionStrings__MongoDbConnection=mongodb://root:Passw0rd@mongodb
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - GrpcAuction=http://auctionSvc:7777
+    ports:
+      - 4004:80
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+      
   searchSvc:
     container_name: Carsties.SearchService
     image: trycatchlearn/search-svc:latest

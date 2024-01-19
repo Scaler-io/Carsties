@@ -3,6 +3,7 @@ using BiddingService.ConfigurationOptions.Identity;
 using BiddingService.ConfigurationOptions.ServiceBus;
 using BiddingService.Consumers;
 using BiddingService.Services.Background;
+using BiddingService.Services.Grpc;
 using BiddingService.Swagger;
 using Carsties.Shared.Contracts;
 using Carsties.Shared.Models.Core;
@@ -110,6 +111,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddHostedService<AuctionFinishedBackgroundService>();
+        services.AddScoped<GrpcAuctionClient>();
 
         return services;
     }

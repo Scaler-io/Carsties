@@ -3,6 +3,7 @@ using AuctionService.Data;
 using AuctionService.DependencyInjections;
 using AuctionService.Extensions;
 using AuctionService.Middlewares;
+using AuctionService.Services.Grpc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Serilog;
 
@@ -33,13 +34,15 @@ app.UseHttpsRedirection();
 
 app.UseCors("DefaultPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.UseMiddleware<RequestLoggerMiddleware>();
 app.UseMiddleware<CorrelationHeaderEnricher>();
 app.UseMiddleware<GLobalExceptionMiddleware>();
+
+app.MapControllers();
+app.MapGrpcService<GrpcAuctionService>();
 
 try
 {
