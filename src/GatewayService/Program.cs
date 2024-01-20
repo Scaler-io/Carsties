@@ -19,7 +19,7 @@ var identityGroupAccess = builder.Configuration
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("DefaultPolicy", policy =>
+    options.AddPolicy("CorsPolicy", policy =>
     {
         policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
     });
@@ -44,7 +44,7 @@ var app = builder.Build();
 
 try
 {
-    app.UseCors("DefaultPolicy");
+    app.UseCors("CorsPolicy");
     app.MapReverseProxy();
     app.UseAuthentication();
     app.UseAuthorization();

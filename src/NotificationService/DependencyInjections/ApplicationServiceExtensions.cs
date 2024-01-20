@@ -1,5 +1,6 @@
 using MassTransit;
 using NotificationService.Configurations.ServiceBus;
+using NotificationService.Consumers;
 
 namespace NotificationService.DependencyInjections;
 
@@ -17,6 +18,7 @@ public static class ApplicationServiceExtensions
         // rabbitmq
         services.AddMassTransit(x =>
         {
+            x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
             x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("notification", false));
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -28,6 +30,10 @@ public static class ApplicationServiceExtensions
                 cfg.ConfigureEndpoints(context);
             });
         });
+
+        // signalR
+        services.AddSignalR();
+
 
         return services;
     }
