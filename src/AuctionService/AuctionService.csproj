@@ -59,7 +59,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="protos/auction.proto" GrpcServices="Server"/>
+    <Protobuf Include="Protos/auction.proto" GrpcServices="Server"/>
   </ItemGroup>
 
 </Project>
