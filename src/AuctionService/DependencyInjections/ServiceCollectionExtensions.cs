@@ -48,7 +48,6 @@ namespace AuctionService.DependencyInjections
             services.AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
             services.ConfigureOptions<ConfigureSwaggerOptions>();
             services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearch"));
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMassTransit(config =>
             {
@@ -110,6 +109,8 @@ namespace AuctionService.DependencyInjections
                     NameClaimType = "username"
                 };
             });
+
+            services.AddGrpc();
 
             return services;
         }

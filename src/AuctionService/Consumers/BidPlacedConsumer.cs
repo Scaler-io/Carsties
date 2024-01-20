@@ -22,7 +22,7 @@ public class BidPlacedConsumer : IConsumer<BidPlaced>
         _logger.Here().MethodEnterd();
         _logger.Here().Information("Bidplaced message processing started");
 
-        var auction = await _dbContext.Auctions.FindAsync(context.Message.AuctionId);
+        var auction = await _dbContext.Auctions.FindAsync(Guid.Parse(context.Message.AuctionId));
         if (auction is null)
         {
             _logger.Here().Warning("No auction is present in database with id {auctionId}", context.Message.AuctionId);

@@ -25,7 +25,7 @@ public class AuctionFinishedConsumer : IConsumer<AuctionFinished>
             .ForContext("MessageId", context.MessageId)
             .Debug("Auction finished message processing started {auctionId}", context.Message.AuctionId);
 
-        var auction = await _context.Auctions.FindAsync(context.Message.AuctionId);
+        var auction = await _context.Auctions.FindAsync(Guid.Parse(context.Message.AuctionId));
         if (auction is null)
         {
             _logger.Here().Warning("No auction is present in database with id {auctionId}", context.Message.AuctionId);
