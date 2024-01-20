@@ -9,6 +9,7 @@ COPY src/AuctionService/AuctionService.csproj    src/AuctionService/AuctionServi
 COPY src/SearchService/SearchService.csproj      src/SearchService/SearchService.csproj
 COPY src/BiddingService/BiddingService.csproj    src/BiddingService/BiddingService.csproj
 COPY src/GatewayService/GatewayService.csproj    src/GatewayService/GatewayService.csproj
+COPY src/NotificationService/NotificationService.csproj    src/NotificationService/NotificationService.csproj
 COPY src/IdentityService/IdentityService.csproj  src/IdentityService/IdentityService.csproj
 COPY src/Carsties.Shared/Carsties.Shared.csproj  src/Carsties.Shared/Carsties.Shared.csproj
 
