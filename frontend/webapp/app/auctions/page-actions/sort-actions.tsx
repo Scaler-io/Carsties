@@ -6,12 +6,12 @@ import React from "react";
 const SortActions = () => {
   const setParams = useParamsStore((state) => state.setParams);
   const orderBy = useParamsStore((state) => state.orderBy);
-  
+
   return (
     <div>
-      <span className="uppercase text-sm text-gray-200 mr-2">Sort</span>
+      <span className="uppercase text-sm text-gray-500 mr-2">Sort</span>
       <Button.Group>
-        {orderButtons.map(({ label, icon: Icon , value }) => (
+        {orderButtons.map(({ label, icon: Icon, value }) => (
           <Button
             key={value}
             onClick={() => setParams({ orderBy: value })}

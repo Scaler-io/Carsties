@@ -9,7 +9,7 @@ const Filter = () => {
 
   return (
     <div>
-      <span className="uppercase text-sm text-gray-200 mr-2">Filters</span>
+      <span className="uppercase text-sm text-gray-500 mr-2">Filters</span>
       <Button.Group>
         {filterButtons.map(({ label, icon: Icon, value }) => (
           <Button
